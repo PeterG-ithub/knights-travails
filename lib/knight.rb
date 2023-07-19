@@ -17,26 +17,30 @@ class Knight
   end
 
   def knight_moves(position, target)
+    history = []
     queue = []
     visited = []
     x_axis = [2, 2, -2, -2, 1, 1, -1, -1]
     y_axis = [-1, 1, 1, -1, 2, -2, 2, -2]
     queue.push(position)
-    visited.push((position[0] + 1) * (position[1] + 1))
-    distance = 0
-    target_id = ((target[0] + 1) * (target[1] + 1))
+    history.push(position)
+    visited.push((position[0] + 1) + (position[1]*8))
+    target_id = ((target[0] + 1) + (target[1]*8))
     until queue.empty?
-      return distance if visited.any?(target_id)
-      
+      history.push(queue[0])
       8.times do |idx|
-        if (position[0] + x_axis[idx]).between?(0, 7) && (position[1] - y_axis[idx]).between?(0, 7) && !visited.any?(target_id)
-          queue.push([position[0] + x_axis[idx], position[1] - y_axis[idx]])
-          visited.push((position[0] + x_axis[idx] + 1) * (position[1] + y_axis[idx] + 1))
+        if (position[0] + x_axis[idx]).between?(0, 7) && (position[1] + y_axis[idx]).between?(0, 7) && !visited.any?(target_id)
+          queue.push([position[0] + x_axis[idx], position[1] + y_axis[idx]])
+          visited.push((position[0] + x_axis[idx] + 1) + (position[1] + y_axis[idx])*8)
+          if visited.any?(target_id)
+            history.push([position[0] + x_axis[idx], position[1] + y_axis[idx]])
+            return [history, history.count - 1]
+          end
         end
       end
-      position = queue.pop
-      distance += 1
+      history.pop
+      queue.shift
+      position = queue[0]
     end
-    distance
   end
 end
